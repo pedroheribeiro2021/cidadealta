@@ -10,7 +10,7 @@ export class UserBadgeService {
     private readonly userBadgeRepository: Repository<UserBadge>,
   ) {}
 
-  findByUserId(userId: number): Promise<UserBadge[]> {
+  findByUserId(userId: any): Promise<UserBadge[]> {
     return this.userBadgeRepository.find({
       where: { user: { id: userId } },
       relations: ['badge'],
@@ -18,7 +18,7 @@ export class UserBadgeService {
   }
 
   findByUserIdAndBadgeId(
-    userId: number,
+    userId: any,
     badgeId: number,
   ): Promise<UserBadge | undefined> {
     return this.userBadgeRepository.findOne({
@@ -26,11 +26,18 @@ export class UserBadgeService {
     });
   }
 
-  async create(userId: number, badgeId: number): Promise<UserBadge> {
+  async create(userId: any, badgeId: number): Promise<UserBadge> {
     const userBadge = this.userBadgeRepository.create({
       user: { id: userId },
       badge: { id: badgeId },
     });
     return this.userBadgeRepository.save(userBadge);
+  }
+
+  async findBadgesByUserId(userId: number): Promise<UserBadge[]> {
+    return this.userBadgeRepository.find({
+      where: { user: { id: userId } },
+      relations: ['badge'],
+    });
   }
 }
