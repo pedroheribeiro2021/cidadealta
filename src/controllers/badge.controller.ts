@@ -1,12 +1,15 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   //   Post,
   //   Param,
   //   Body,
   //   NotFoundException,
   //   BadRequestException,
 } from '@nestjs/common';
+import { CreateBadgeDto } from 'src/dtos/create-badge.dto';
 import { BadgeService } from 'src/services/badge.service';
 import { UserBadgeService } from 'src/services/userBadge.service';
 
@@ -21,6 +24,11 @@ export class BadgeController {
   async findAll() {
     console.log('controller ok');
     return this.badgeService.findAll();
+  }
+
+  @Post()
+  async create(@Body() createBadgeDto: CreateBadgeDto) {
+    return this.badgeService.create(createBadgeDto);
   }
 
   //   @Post(':slug/redeem')
