@@ -1,53 +1,50 @@
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { BadgeService } from '../services/badge.service';
+import { CreateBadgeDto } from '../dtos/create-badge.dto';
+import { RedeemBadgeDto } from '../dtos/redeem-badge.dto';
 import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
-import { CreateBadgeDto } from 'src/dtos/create-badge.dto';
-import { CreateUserBadgeDto } from 'src/dtos/create-user-badge.dto';
-import { BadgeService } from 'src/services/badge.service';
-import { UserBadgeService } from 'src/services/userBadge.service';
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
+@ApiTags('badges')
 @Controller('badges')
 export class BadgeController {
-  constructor(
-    private readonly badgeService: BadgeService,
-    private readonly userBadgeService: UserBadgeService,
-  ) {}
+  constructor(private readonly badgeService: BadgeService) {}
 
+  @ApiOperation({ summary: 'Listar todos os emblemas' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de emblemas retornada com sucesso.',
+  })
   @Get()
   async findAll() {
-    console.log('controller ok');
     return this.badgeService.findAll();
   }
 
+  @ApiOperation({ summary: 'Criar um novo emblema' })
+  @ApiResponse({ status: 201, description: 'Emblema criado com sucesso.' })
   @Post()
   async create(@Body() createBadgeDto: CreateBadgeDto) {
     return this.badgeService.create(createBadgeDto);
   }
 
+  @ApiOperation({ summary: 'Resgatar um emblema pelo slug' })
+  @ApiParam({ name: 'slug', description: 'Slug do emblema' })
+  @ApiBody({
+    type: RedeemBadgeDto,
+    description: 'Dados necessários para resgatar o emblema',
+  })
+  @ApiResponse({ status: 200, description: 'Emblema resgatado com sucesso.' })
+  @ApiResponse({ status: 404, description: 'Emblema não encontrado.' })
   @Post(':slug/redeem')
   async redeemBadge(
     @Param('slug') slug: string,
-    @Body() createUserBadgeDto: CreateUserBadgeDto,
+    @Body() redeemBadgeDto: RedeemBadgeDto,
   ) {
-    const badge = await this.badgeService.findBySlug(slug);
-    if (!badge) {
-      throw new NotFoundException('Badge not found');
-    }
-
-    const userBadge = await this.userBadgeService.findByUserIdAndBadgeId(
-      createUserBadgeDto.userId,
-      badge.id,
-    );
-    if (userBadge) {
-      throw new BadRequestException('Badge already redeemed');
-    }
-
-    return this.userBadgeService.create(createUserBadgeDto.userId, badge.id);
+    return this.badgeService.redeem(slug, redeemBadgeDto);
   }
 }
