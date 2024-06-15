@@ -16,13 +16,11 @@ import { AuthModule } from './modules/auth.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      // host: 'localhost',
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: 'root',
       password: '123456',
       database: 'cidadealta',
-      // autoLoadEntities: true,
       entities: [User, Badge, UserBadge],
       synchronize: true,
     }),

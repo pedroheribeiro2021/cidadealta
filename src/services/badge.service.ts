@@ -8,7 +8,6 @@ import { CreateBadgeDto } from 'src/dtos/create-badge.dto';
 import { Badge } from 'src/entities/badge.entity';
 import { Repository } from 'typeorm';
 import { UserBadgeService } from './userBadge.service';
-import { RedeemBadgeDto } from 'src/dtos/redeem-badge.dto';
 
 @Injectable()
 export class BadgeService {
@@ -18,15 +17,28 @@ export class BadgeService {
     private readonly userBadgeService: UserBadgeService,
   ) {}
 
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<{ data: Badge[]; total: number }> {
-    const [result, total] = await this.badgeRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return { data: result, total };
+  async findAll(page = 1, limit = 10, name?: string): Promise<any> {
+    const queryBuilder = this.badgeRepository.createQueryBuilder('badge');
+
+    if (name) {
+      queryBuilder.where('badge.name LIKE :name', { name: `%${name}%` });
+    }
+
+    const [data, totalItems] = await queryBuilder
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        totalItems,
+        itemCount: data.length,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+      },
+    };
   }
 
   findBySlug(slug: string): Promise<Badge | undefined> {
@@ -38,20 +50,20 @@ export class BadgeService {
     return this.badgeRepository.save(newBadge);
   }
 
-  async redeem(slug: string, redeemBadgeDto: RedeemBadgeDto): Promise<any> {
+  async redeem(slug: string, userId: number): Promise<any> {
     const badge = await this.findBySlug(slug);
     if (!badge) {
       throw new NotFoundException('Badge not found');
     }
 
     const userBadge = await this.userBadgeService.findByUserIdAndBadgeId(
-      redeemBadgeDto.userId,
+      userId,
       badge.id,
     );
     if (userBadge) {
       throw new BadRequestException('Badge already redeemed');
     }
 
-    return this.userBadgeService.create(redeemBadgeDto.userId, badge.id);
+    return this.userBadgeService.create(userId, badge.id);
   }
 }

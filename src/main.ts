@@ -1,4 +1,3 @@
-// main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -11,7 +10,6 @@ async function bootstrap() {
     .setDescription('API de emblemas para Cidade Alta')
     .setVersion('1.0')
     .addTag('badges', 'Operação de resgate de emblemas')
-    // .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
