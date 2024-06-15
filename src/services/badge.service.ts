@@ -18,8 +18,15 @@ export class BadgeService {
     private readonly userBadgeService: UserBadgeService,
   ) {}
 
-  findAll(): Promise<Badge[]> {
-    return this.badgeRepository.find();
+  async findAll(
+    page: number,
+    limit: number,
+  ): Promise<{ data: Badge[]; total: number }> {
+    const [result, total] = await this.badgeRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data: result, total };
   }
 
   findBySlug(slug: string): Promise<Badge | undefined> {

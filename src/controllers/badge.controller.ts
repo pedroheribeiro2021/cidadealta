@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { BadgeService } from '../services/badge.service';
-import { CreateBadgeDto } from '../dtos/create-badge.dto';
-import { RedeemBadgeDto } from '../dtos/redeem-badge.dto';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { BadgeService } from 'src/services/badge.service';
+import { CreateBadgeDto } from 'src/dtos/create-badge.dto';
+import { RedeemBadgeDto } from 'src/dtos/redeem-badge.dto';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('badges')
@@ -20,13 +21,28 @@ export class BadgeController {
     status: 200,
     description: 'Lista de emblemas retornada com sucesso.',
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Número da página',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Número de itens por página',
+    example: 10,
+  })
   @Get()
-  async findAll() {
-    return this.badgeService.findAll();
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.badgeService.findAll(page, limit);
   }
 
   @ApiOperation({ summary: 'Criar um novo emblema' })
   @ApiResponse({ status: 201, description: 'Emblema criado com sucesso.' })
+  @ApiBody({ type: CreateBadgeDto, description: 'Dados do novo emblema' })
   @Post()
   async create(@Body() createBadgeDto: CreateBadgeDto) {
     return this.badgeService.create(createBadgeDto);
