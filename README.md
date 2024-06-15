@@ -28,32 +28,33 @@ O sistema permite criar, listar e atribuir emblemas a usuários registrados. Cad
 
 2. **Instale as dependências:**
 
-npm install
-# ou
-yarn install
+   ```bash
+   npm install
+   ou
+   yarn install
 
 3. **Configure as variáveis de ambiente:**
 
-Crie um arquivo .env na raiz do projeto conforme o exemplo abaixo:
+   Crie um arquivo .env na raiz do projeto conforme o exemplo abaixo:
 
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=root
-DB_PASSWORD=sua-senha
-DB_DATABASE=nome-do-banco
-JWT_SECRET=seu-segredo-jwt
+         DB_HOST=localhost
+         DB_PORT=3306
+         DB_USERNAME=root
+         DB_PASSWORD=sua-senha
+         DB_DATABASE=nome-do-banco
+         JWT_SECRET=seu-segredo-jwt
 
 4. **Execute as migrações do banco de dados:**
 
-npm run typeorm migration:run
-# ou
-yarn typeorm migration:run
+         npm run typeorm migration:run
+         ou
+         yarn typeorm migration:run
 
 5. **Inicie a aplicação:**
 
-npm run start:dev
-# ou
-yarn start:dev
+         npm run start:dev
+         ou
+         yarn start:dev
 
 A aplicação estará disponível em `http://localhost:3000.`
 
